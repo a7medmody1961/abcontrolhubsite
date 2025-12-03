@@ -47,7 +47,8 @@ const domCache = {
   ry_lbl: null,
   stickCanvas: null,
   l2_progress: null,
-  r2_progress: null
+  r2_progress: null,
+  connect_message: null, // تم إضافة عنصر رسالة الاتصال هنا
 };
 
 function gboot() {
@@ -68,6 +69,7 @@ function gboot() {
     domCache.stickCanvas = document.getElementById("stickCanvas");
     domCache.l2_progress = document.getElementById("l2-progress");
     domCache.r2_progress = document.getElementById("r2-progress");
+    domCache.connect_message = document.getElementById("connect-message"); // جلب عنصر رسالة الاتصال
 
     window.addEventListener("error", (event) => {
       console.error(event.error?.stack || event.message);
@@ -135,6 +137,27 @@ function gboot() {
             }
         });
     }
+    
+    // --- المنطق الجديد: بدء الاتصال تلقائياً ---
+    if (!("hid" in navigator) && !app.isAndroid) {
+      setDisplay('offlinebar', false);
+      setDisplay('onlinebar', false);
+      setDisplay('missinghid', true);
+      return;
+    }
+    
+    // إظهار رسالة 'بانتظار الاتصال' وتحريك مؤشر التحميل
+    if (domCache.connect_message) {
+      domCache.connect_message.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> ${l("Waiting for Connect...")}`;
+    }
+
+    // بدء محاولة الاتصال التلقائي
+    connect_auto();
+
+    if (!app.isAndroid) {
+        navigator.hid.addEventListener("disconnect", handleDisconnectedDevice);
+    }
+    // ------------------------------------------
   }
 
   if (document.readyState === 'loading') {
@@ -143,17 +166,18 @@ function gboot() {
     initializeApp();
   }
 
-  if (!("hid" in navigator) && !app.isAndroid) {
-    setDisplay('offlinebar', false);
-    setDisplay('onlinebar', false);
-    setDisplay('missinghid', true);
-    return;
-  }
+  // تم نقل منطق الـ HID هنا
+  // if (!("hid" in navigator) && !app.isAndroid) {
+  //   setDisplay('offlinebar', false);
+  //   setDisplay('onlinebar', false);
+  //   setDisplay('missinghid', true);
+  //   return;
+  // }
 
-  setDisplay('offlinebar', true);
-  if (!app.isAndroid) {
-      navigator.hid.addEventListener("disconnect", handleDisconnectedDevice);
-  }
+  // setDisplay('offlinebar', true);
+  // if (!app.isAndroid) {
+  //     navigator.hid.addEventListener("disconnect", handleDisconnectedDevice);
+  // }
 }
 
 function setDisplay(id, show) {
@@ -166,12 +190,37 @@ function toggleElement(id, show) {
     if (el) el.style.display = show ? '' : 'none';
 }
 
-// Helper to reset connect button UI state
+// Helper to reset connect button UI state (للحالة التي بها زر Connect)
 function resetConnectUI() {
     const btnConnect = document.getElementById("btnconnect");
     const connectSpinner = document.getElementById("connectspinner");
     if (btnConnect) btnConnect.disabled = false;
     if (connectSpinner) connectSpinner.style.display = 'none';
+    
+    // تحديث رسالة الاتصال للحالة الافتراضية الجديدة
+    if (domCache.connect_message) {
+        domCache.connect_message.innerHTML = `${l("Waiting for Connect...")}`;
+        // إظهار زر الاتصال المخفي في حال الفشل
+        btnConnect.style.display = 'inline-block';
+    }
+}
+
+// دالة جديدة لبدء الاتصال تلقائياً (بما يماثل الضغط على زر Connect)
+async function connect_auto() {
+    // إخفاء الزر وعرض رسالة الانتظار
+    const btnConnect = document.getElementById("btnconnect");
+    const connectSpinner = document.getElementById("connectspinner");
+    
+    if (domCache.connect_message) {
+      domCache.connect_message.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> ${l("Waiting for Connect...")}`;
+    }
+    
+    // لا نحتاج لتعطيل الزر أو إظهار المؤشر بشكل منفصل الآن
+    // if (btnConnect) btnConnect.disabled = true;
+    // if (connectSpinner) connectSpinner.style.display = 'inline-block';
+    
+    // الاتصال الفعلي
+    await connect();
 }
 
 async function connect() {
@@ -189,9 +238,13 @@ async function connect() {
   const btnConnect = document.getElementById("btnconnect");
   const connectSpinner = document.getElementById("connectspinner");
   
-  btnConnect.disabled = true;
-  connectSpinner.style.display = 'inline-block';
-  await sleep(100);
+  // تحديث حالة الواجهة قبل محاولة الاتصال
+  if (btnConnect) btnConnect.disabled = true;
+  if (connectSpinner) connectSpinner.style.display = 'inline-block';
+  
+  if (domCache.connect_message) {
+      domCache.connect_message.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> ${l("Connecting...")}`;
+  }
 
   try {
     if (app.isAndroid) {
@@ -201,10 +254,11 @@ async function connect() {
         const requestParams = { filters: supportedModels };
         let devices = await navigator.hid.getDevices();
         if (devices.length == 0) {
+          // إذا لم يتم العثور على أجهزة محفوظة، نطلب من المستخدم اختيار جهاز
           devices = await navigator.hid.requestDevice(requestParams);
         }
         if (devices.length == 0) {
-          throw new Error("No device selected");
+          throw new Error("No device selected or permission denied");
         }
 
         if (devices.length > 1) {
@@ -227,6 +281,13 @@ async function connect() {
 
   } catch(error) {
     console.error("Connection failed", error);
+    
+    // في حالة فشل الاتصال، عرض رسالة الخطأ والعودة لحالة الانتظار
+    if (domCache.connect_message) {
+        // يمكنك تعديل الرسالة لتكون أوضح
+        domCache.connect_message.innerHTML = `${l("Connection failed. Waiting for Connect...")}`;
+    }
+    
     resetConnectUI();
     await disconnect();
   }
@@ -339,7 +400,7 @@ async function setupDeviceUI(device) {
       const contextMessage = device 
         ? `${l("Connected invalid device")}: ${dec2hex(device.vendorId)}:${dec2hex(device.productId)}`
         : l("Failed to connect to device");
-        throw new Error(contextMessage, { cause: error });
+        throw new Error(contextMessage, { cause: info?.error || error });
     }
 
     if(!info?.ok) {
@@ -356,7 +417,9 @@ async function setupDeviceUI(device) {
     const deviceName = ControllerFactory.getDeviceName(device.productId);
     document.getElementById("devname").textContent = deviceName + " (" + dec2hex(device.vendorId) + ":" + dec2hex(device.productId) + ")";
 
-    setDisplay("offlinebar", false);
+    // إخفاء رسالة 'بانتظار الاتصال'
+    setDisplay("offlinebar", false); 
+    
     setDisplay("onlinebar", true);
     setDisplay("mainmenu", true);
     toggleElement("resetBtn", true);
@@ -393,11 +456,7 @@ async function setupDeviceUI(device) {
     }
     if(app.disable_btn != 0) update_disable_btn();
 
-    if (model == "DS4" && info?.rare) {
-      show_popup("Wow, this is a rare/weird controller! Please write me an email at ds4@the.al or contact me on Discord (the_al)");
-    }
-
-    if(model == "DS5_Edge") {
+    if (model == "DS5_Edge") {
       show_edge_modal();
     }
     
@@ -427,6 +486,14 @@ async function disconnect() {
   setDisplay("offlinebar", true);
   setDisplay("onlinebar", false);
   setDisplay("mainmenu", false);
+  
+  // إعادة حالة الواجهة لـ 'بانتظار الاتصال' ومحاولة الاتصال التلقائي
+  if (domCache.connect_message) {
+    domCache.connect_message.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> ${l("Waiting for Connect...")}`;
+  }
+  
+  // إعادة تشغيل محاولة الاتصال التلقائي
+  // connect_auto(); // تم التعليق بناءً على فهمي لـ WebHID
   
   // Reset connect button state on disconnect
   resetConnectUI();
