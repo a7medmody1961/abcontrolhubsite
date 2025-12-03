@@ -1,0 +1,793 @@
+/* --- 
+  New Design By Ahmed Badawy
+  Theme: Futuristic HUD / Neon
+--- */
+
+/* ### خطوط وألوان أساسية ### */
+:root {
+  --glow-cyan: #00f0f0;
+  --glow-magenta: #f000f0;
+  --glow-green: #00f000;
+  --glow-danger: #ff4d4d;
+  --bg-dark: #0a0a1a; /* كحلي غامق جداً */
+  --bg-module: rgba(16, 16, 36, 0.85); /* أزرق أغمق شفاف */
+  --bg-module-heavy: rgba(16, 16, 36, 0.95);
+  --border-color: rgba(0, 240, 240, 0.4);
+  --text-light: #e0e0e0;
+  --text-dark: #12121e;
+  --font-hud: 'Teko', sans-serif;
+}
+
+body {
+  font-family: 'Inter', sans-serif; /* خط عادي للكلام */
+  background-color: var(--bg-dark);
+  color: var(--text-light);
+  
+  /* --- صورة الخلفية --- */
+  background-image: linear-gradient(rgba(10, 10, 26, 0.92), rgba(10, 10, 26, 0.98)), url('../background.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  padding-bottom: 80px; /* للفوتر */
+}
+
+/* ### الهيدر والفوتر الجديد ### */
+.navbar, .page-footer {
+  font-family: var(--font-hud);
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  background-color: var(--bg-module-heavy) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.navbar-brand {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--glow-cyan) !important;
+  text-shadow: 0 0 5px var(--glow-cyan), 0 0 10px var(--glow-cyan);
+}
+
+.nav-link {
+  color: var(--text-light) !important;
+  transition: 0.3s;
+}
+.nav-link:hover {
+  color: var(--glow-cyan) !important;
+  text-shadow: 0 0 5px var(--glow-cyan);
+}
+
+.page-footer {
+  border-top: 1px solid var(--border-color) !important;
+}
+.footer-text {
+  color: var(--text-light);
+}
+.footer-text b {
+  color: var(--glow-cyan);
+}
+.page-footer .link-body-emphasis {
+    color: var(--glow-cyan) !important;
+    transition: 0.3s;
+    font-size: 1.5rem;
+}
+.page-footer .link-body-emphasis:hover {
+    color: #fff !important;
+    text-shadow: 0 0 5px var(--glow-cyan);
+}
+.page-footer .bi {
+    fill: currentColor;
+}
+
+
+/* ### شاشة الكونكت (ملء الشاشة) ### */
+#offlinebar.offline-container:not([style*="display: none"]) {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 70vh;
+  padding: 2rem;
+}
+#offlinebar h1 {
+  font-family: var(--font-hud);
+  font-weight: 500;
+  font-size: 2.5rem;
+  color: #fff;
+  text-shadow: 0 0 5px var(--glow-cyan);
+}
+/* إخفاء شاشة الأونلاين والداشبورد لو الأوفلاين شغالة */
+#offlinebar:not([style*="display: none"]) ~ #onlinebar,
+#offlinebar:not([style*="display: none"]) ~ #mainmenu {
+  display: none !important;
+}
+
+
+/* ### الداشبورد (بعد الكونكت) ### */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  font-family: var(--font-hud);
+  font-size: 1.3rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1rem;
+}
+.device-info {
+  color: var(--text-light);
+}
+.device-info strong {
+  color: var(--glow-cyan);
+  margin-left: 10px;
+}
+.device-status {
+  display: flex;
+  align-items: center;
+}
+#d-bat {
+  font-weight: 700;
+  color: var(--glow-green);
+  text-shadow: 0 0 5px var(--glow-green);
+}
+
+/* ### تصميم الجريد للداشبورد ### */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ### تصميم الموديول (الكارت) ### */
+.dash-module {
+  background-color: var(--bg-module);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 240, 240, 0.1), 0 0 10px rgba(0, 240, 240, 0.1) inset;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+.dash-module:hover {
+  border-color: var(--glow-cyan);
+  box-shadow: 0 0 25px rgba(0, 240, 240, 0.3), 0 0 15px rgba(0, 240, 240, 0.2) inset;
+}
+
+.dash-module .card-header {
+  font-family: var(--font-hud);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--glow-cyan);
+  background-color: rgba(0, 240, 240, 0.05);
+  border-bottom: 1px solid var(--border-color);
+  text-align: center;
+}
+
+/* موديول الأنالوج (خليه يكبر شوية) */
+.module-joysticks {
+  grid-column: span 1;
+  /* ده بيخليه ياخد عرض أكبر لو فيه مكان */
+  @media (min-width: 1200px) {
+    grid-column: span 2; 
+  }
+  align-items: center;
+}
+
+#stickCanvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ### ستايل الأزرار الجديد ### */
+.btn-glow-base {
+  font-family: var(--font-hud);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 12px 24px;
+  border-radius: 5px;
+  border: 2px solid;
+  background: transparent;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+}
+.btn-glow-base:disabled {
+  filter: grayscale(80%);
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(120, 120, 120, 0.2) !important;
+  color: #777 !important;
+  border-color: #555 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+.btn-glow-base:not(:disabled):active {
+  transform: scale(0.98);
+  box-shadow: 0 0 5px var(--glow-cyan) inset !important;
+}
+
+/* زرار الكونكت */
+.btn-glow-connect {
+  font-family: var(--font-hud);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 12px 24px;
+  border-radius: 5px;
+  border: 2px solid;
+  background: transparent;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+  
+  color: var(--glow-cyan);
+  border-color: var(--glow-cyan);
+  text-shadow: 0 0 5px var(--glow-cyan);
+  box-shadow: 0 0 10px var(--glow-cyan), 0 0 10px var(--glow-cyan) inset;
+  font-size: 1.5rem;
+  padding: 15px 30px;
+}
+.btn-glow-connect:hover {
+  color: var(--bg-dark);
+  background: var(--glow-cyan);
+  box-shadow: 0 0 15px var(--glow-cyan), 0 0 30px var(--glow-cyan);
+}
+
+/* زرار الفصل */
+.btn-glow-disconnect {
+  font-family: var(--font-hud);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 12px 24px;
+  border-radius: 5px;
+  border: 2px solid;
+  background: transparent;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+  
+  color: var(--glow-danger);
+  border-color: var(--glow-danger);
+  text-shadow: 0 0 5px var(--glow-danger);
+  padding: 5px 10px;
+  font-size: 1rem;
+  width: auto;
+}
+.btn-glow-disconnect:hover {
+  color: var(--bg-dark);
+  background: var(--glow-danger);
+  box-shadow: 0 0 10px var(--glow-danger);
+}
+
+/* أزرار أساسية (تم التصحيح: رجعناها سماوي) */
+.btn-glow-primary {
+  font-family: var(--font-hud);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 12px 24px;
+  border-radius: 5px;
+  border: 2px solid;
+  background: transparent;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+  
+  color: var(--glow-cyan);
+  border-color: var(--glow-cyan);
+}
+.btn-glow-primary:hover {
+  color: var(--bg-dark);
+  background: var(--glow-cyan);
+  box-shadow: 0 0 10px var(--glow-cyan), 0 0 20px var(--glow-cyan);
+}
+
+/* أزرار ثانوية (Test / Info) */
+.btn-glow-secondary {
+  font-family: var(--font-hud);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 12px 24px;
+  border-radius: 5px;
+  border: 2px solid;
+  background: transparent;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+  
+  color: var(--glow-magenta);
+  border-color: var(--glow-magenta);
+}
+.btn-glow-secondary:hover {
+  color: var(--bg-dark);
+  background: var(--glow-magenta);
+  box-shadow: 0 0 10px var(--glow-magenta), 0 0 20px var(--glow-magenta);
+}
+
+/* أزرار الحفظ (Success) */
+.btn-glow-success {
+  font-family: var(--font-hud);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: px 24px;
+  border-radius: 5px;
+  border: 2px solid;
+  background: transparent;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+  
+  color: var(--glow-green);
+  border-color: var(--glow-green);
+}
+.btn-glow-success:hover {
+  color: var(--bg-dark);
+  background: var(--glow-green);
+  box-shadow: 0 0 10px var(--glow-green), 0 0 20px var(--glow-green);
+}
+
+/* أزرار الخطر (تم التصحيح: رجعناها أحمر) */
+.btn-glow-danger {
+  font-family: var(--font-hud);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 12px 24px;
+  border-radius: 5px;
+  border: 2px solid;
+  background: transparent;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+  
+  color: var(--glow-danger);
+  border-color: var(--glow-danger);
+}
+.btn-glow-danger:hover {
+  color: var(--bg-dark);
+  background: var(--glow-danger);
+  box-shadow: 0 0 10px var(--glow-danger), 0 0 20px var(--glow-danger);
+}
+
+/* +++ إضافات جديدة للأزرار المخصصة (أحمر، أزرق، أبيض) +++ */
+
+/* زرار الليد الأحمر */
+.btn-glow-red {
+  font-family: var(--font-hud);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 12px 24px;
+  border-radius: 5px;
+  border: 2px solid;
+  background: transparent;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+  
+  color: #ff0000;
+  border-color: #ff0000;
+  text-shadow: 0 0 5px #ff0000;
+}
+.btn-glow-red:hover {
+  color: var(--bg-dark);
+  background: #ff0000;
+  box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+}
+
+/* زرار الليد الأزرق */
+.btn-glow-blue {
+  font-family: var(--font-hud);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: px 24px;
+  border-radius: 5px;
+  border: 2px solid;
+  background: transparent;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+  
+  color: #2979ff; 
+  border-color: #2979ff;
+  text-shadow: 0 0 5px #2979ff;
+}
+.btn-glow-blue:hover {
+  color: var(--bg-dark);
+  background: #2979ff;
+  box-shadow: 0 0 10px #2979ff, 0 0 20px #2979ff;
+}
+
+/* زرار الإيقاف (أبيض) */
+.btn-glow-white {
+  font-family: var(--font-hud);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 12px 24px;
+  border-radius: 5px;
+  border: 2px solid;
+  background: transparent;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+  
+  color: #ffffff;
+  border-color: #ffffff;
+  text-shadow: 0 0 5px #ffffff;
+}
+.btn-glow-white:hover {
+  color: var(--bg-dark);
+  background: #ffffff;
+  box-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
+}
+
+
+/* ### تعديلات على الـ Modals ### */
+.modal-content {
+  border-width: 2px;
+  box-shadow: 0 0 30px rgba(0, 240, 240, 0.5);
+}
+.modal-header {
+  font-family: var(--font-hud);
+  font-size: 1.5rem;
+  color: var(--glow-cyan);
+  border-bottom: 1px solid var(--border-color);
+}
+.modal-footer {
+  border-top: 1px solid var(--border-color);
+}
+.modal-body {
+  color: black;
+}
+.modal-body .list-group-item {
+  border-color: rgba(0, 240, 240, 0.2);
+}
+.modal-body .list-group-item.active {
+  background-color: var(--glow-cyan);
+  color: var(--bg-dark) !important;
+  border-color: var(--glow-cyan);
+}
+.modal-body .alert {
+  background-color: rgba(0, 240, 240, 0.1);
+  border-color: var(--border-color);
+  color: var(--bs-white);
+}
+
+/* تعديل الـ Buttons اللي جوه الـ Modals */
+.modal-footer .btn-primary {
+  font-family: var(--font-hud);
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 8px 16px;
+  border-radius: 5px;
+  border: 2px solid;
+  background: transparent;
+  transition: all 0.3s ease;
+  width: auto;
+  text-transform: uppercase;
+  
+  color: var(--glow-cyan);
+  border-color: var(--glow-cyan);
+}
+.modal-footer .btn-primary:hover {
+  color: var(--bg-dark);
+  background: var(--glow-cyan);
+  box-shadow: 0 0 10px var(--glow-cyan), 0 0 20px var(--glow-cyan);
+}
+
+.modal-footer .btn-outline-secondary {
+    font-family: var(--font-hud);
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: 2px solid;
+    background: transparent;
+    transition: all 0.3s ease;
+    width: auto;
+    text-transform: uppercase;
+    
+    color: var(--glow-magenta);
+    border-color: var(--glow-magenta);
+}
+.modal-footer .btn-outline-secondary:hover {
+  color: var(--bg-dark);
+  background: var(--glow-magenta);
+  box-shadow: 0 0 10px var(--glow-magenta), 0 0 20px var(--glow-magenta);
+}
+
+.modal-footer .btn-secondary {
+    font-family: var(--font-hud);
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: 2px solid;
+    background: transparent;
+    transition: all 0.3s ease;
+    width: auto;
+    text-transform: uppercase;
+    
+    color: #999;
+    border-color: #555;
+}
+.modal-footer .btn-secondary:hover {
+    color: #fff;
+    background: #555;
+}
+
+/* ### تعديلات المتجاوبة (Responsive) ### */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr; /* عمود واحد فقط في الموبايل */
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .device-status {
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  .offline-container h1 {
+    font-size: 1.8rem;
+  }
+}
+
+/* تعديلات متفرقة من الملف القديم */
+dl.row dt {
+  font-weight: normal;
+  color: #aaa;
+}
+dl.row dd {
+  font-family: monospace;
+  color: #fff;
+}
+/* --- 
+  Additions for Controller View & Rebuilt Modals
+--- */
+
+/* ### 5. Controller View Module ### */
+.module-controller-svg {
+  grid-column: span 1;
+  padding: 1rem 0;
+  @media (min-width: 768px) {
+    grid-column: 1 / -1; 
+  }
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#controller-svg-placeholder {
+  width: 100%;
+  max-width: 700px;
+  margin: auto;
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+}
+#controller-svg-placeholder svg {
+    width: 100%;
+    height: auto;
+}
+
+/* ### 3 & 4. Rebuilt Modal Styles ### */
+
+/* خلفية المودال */
+.modal-content {
+  border-width: 2px !important;
+  box-shadow: 0 0 30px rgba(0, 240, 240, 0.5) !important;
+}
+
+/* ستايل شاشة المعايرة (Wizard) */
+.calib-wizard-header {
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.calib-step-counter {
+  font-family: var(--font-hud);
+  font-size: 1.2rem;
+  color: #000;
+}
+
+.calib-wizard-content {
+  text-align: center;
+  padding: 1rem 0;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.calib-wizard-content h4 {
+  font-family: var(--font-hud);
+  font-size: 1.8rem;
+  color: var(--glow-cyan);
+  margin-bottom: 1rem;
+  text-shadow: 0 0 5px var(--glow-cyan);
+}
+
+.calib-wizard-content p {
+  font-size: 1.1rem;
+  color: var(--bg-dark);
+  max-width: 90%;
+}
+
+/* 4. ستايل الأنيميشن بتاع الأنالوج (Range Calib) */
+.range-animation {
+  width: 100px;
+  height: 100px;
+  border: 2px solid var(--border-color);
+  border-radius: 50%;
+  margin: 1.5rem auto;
+  position: relative;
+}
+.range-stick {
+  width: 30px;
+  height: 30px;
+  background-color: var(--glow-cyan);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px var(--glow-cyan), 0 0 15px var(--glow-cyan);
+  animation: rotate-stick 4s ease-in-out infinite;
+}
+
+/* أنيميشن دوران الأنالوج */
+@keyframes rotate-stick {
+  0% { transform: translate(calc(-50% + 0px), calc(-50% + 0px)); }
+  10% { transform: translate(calc(-50% + 0px), calc(-50% - 35px)); } /* Top */
+  20% { transform: translate(calc(-50% + 35px), calc(-50% - 35px)); } /* Top-Right */
+  30% { transform: translate(calc(-50% + 35px), calc(-50% + 0px)); } /* Right */
+  40% { transform: translate(calc(-50% + 35px), calc(-50% + 35px)); } /* Bottom-Right */
+  50% { transform: translate(calc(-50% + 0px), calc(-50% + 35px)); } /* Bottom */
+  60% { transform: translate(calc(-50% - 35px), calc(-50% + 35px)); } /* Bottom-Left */
+  70% { transform: translate(calc(-50% - 35px), calc(-50% + 0px)); } /* Left */
+  80% { transform: translate(calc(-50% - 35px), calc(-50% - 35px)); } /* Top-Left */
+  90% { transform: translate(calc(-50% + 0px), calc(-50% - 35px)); } /* Top */
+  100% { transform: translate(calc(-50% + 0px), calc(-50% + 0px)); } /* Center */
+}
+
+/* ### Button Test Module Styles ### */
+#digital-buttons-container {
+  text-align: center;
+}
+.btn-indicator {
+  font-family: var(--font-hud);
+  font-size: 1.2rem; /* كبر الفونت شوية للأيقونة */
+  padding: 8px 10px;
+  border: 2px solid var(--border-color);
+  border-radius: 5px;
+  background-color: rgba(16, 16, 36, 0.8);
+  color: var(--text-light);
+  transition: all 0.1s ease;
+  opacity: 0.6;
+  width: 50px; /* عرض ثابت */
+  height: 45px; /* طول ثابت */
+  display: inline-flex; /* عشان الأيقونة تتوسط */
+  justify-content: center;
+  align-items: center;
+  line-height: 1;
+}
+.btn-indicator.pressed {
+  background-color: var(--glow-cyan);
+  color: var(--bg-dark);
+  border-color: var(--glow-cyan);
+  box-shadow: 0 0 10px var(--glow-cyan);
+  opacity: 1;
+  transform: scale(1.05);
+}
+#l2-progress, #r2-progress {
+  background-color: var(--glow-magenta);
+  transition: width 0.05s linear; /* حركة ناعمة للـ Triggers */
+}
+/* ### SVG Button Glow Effect ### */
+#controller-svg-placeholder .pressed-glow {
+  /* فلتر التوهج بلون السيان */
+  filter: 
+    drop-shadow(0 0 3px var(--glow-cyan)) 
+    drop-shadow(0 0 6px var(--glow-cyan)) 
+    brightness(1.5); /* زيادة السطوع */
+
+  /* لون السيان لو الفلتر مش شغال */
+  fill: var(--glow-cyan) !important; 
+  stroke: var(--glow-cyan) !important;
+}
+
+/* أنيميشن ناعم للـ SVG */
+#controller-svg-placeholder path,
+#controller-svg-placeholder rect,
+#controller-svg-placeholder circle,
+#controller-svg-placeholder ellipse {
+  transition: fill 0.1s ease, stroke 0.1s ease, filter 0.1s ease !important;
+}
+/* ### Header Board Model Style ### */
+#d-board {
+  font-family: var(--font-hud);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--bs-white);
+  opacity: 0.7;
+  margin-left: 1.5rem; /* مسافة من اسم الدراع */
+}
+#d-board::before {
+  content: '|'; /* فاصل أنيق */
+  margin-right: 1.5rem;
+  opacity: 0.3;
+}
+
+/* ### Input Analysis Tools ### */
+/* استبدال الستايلات الداخلية (Inline Styles) الخاصة بالمودال */
+
+.analysis-stat-card {
+  border: 1px solid;
+  transition: all 0.3s ease;
+}
+.analysis-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* كارت معدل التحديث (Polling Rate) */
+.stat-polling {
+  background-color: rgba(0, 240, 240, 0.05); 
+  border-color: var(--border-color) !important;
+}
+.stat-polling h2 {
+  color: var(--glow-cyan);
+}
+
+/* كارت التأخير (Latency) */
+.stat-latency {
+  background-color: rgba(240, 0, 240, 0.05); 
+  border-color: rgba(240, 0, 240, 0.4) !important;
+}
+.stat-latency h2 {
+  color: var(--glow-magenta);
+}
+
+/* كارت التذبذب (Jitter) */
+.stat-jitter {
+  background-color: rgba(255, 77, 77, 0.05); 
+  border-color: rgba(255, 77, 77, 0.4) !important;
+}
+.stat-jitter h2 {
+  color: var(--glow-danger);
+}
+
+/* الرسم البياني (Canvas Container) */
+.analysis-graph-container {
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-color);
+}
+.analysis-graph-header {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border-color);
+  font-family: var(--font-hud);
+  color: var(--text-light);
+}
+#analysis-overlay {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  z-index: 10;
+  transition: opacity 0.3s ease;
+}

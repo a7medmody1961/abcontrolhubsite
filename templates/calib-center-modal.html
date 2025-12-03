@@ -1,0 +1,59 @@
+<div class="modal fade" id="calibCenterModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="calibTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 ds-i18n" id="calibTitle">Stick center calibration</h1>
+        <button type="button" id="calibCross" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="calib-wizard-header">
+          <span id="calib-step-counter" class="calib-step-counter ds-i18n">Welcome</span>
+        </div>
+
+        <div class="calib-wizard-content">
+            <div class="container" id="list-1">
+                <h4 class="ds-i18n">Welcome to the stick center-calibration wizard!</h4>
+                <p class="ds-i18n">This tool will guide you in re-centering the analog sticks of your controller. It consists of four steps: you will be asked to move both sticks in a direction and release them.</p>
+                <p class="ds-i18n">Please be aware that, <i>once the calibration is running, it cannot be canceled</i>. Do not close this page or disconnect your controller until it is completed.</p>
+                <p class="ds-i18n">Press <b>Start</b> to begin calibration.</p>
+            </div>
+            <div class="container" style="display: none;" id="list-2">
+                <h4 class="ds-i18n">Step 1 of 4</h4>
+                <p class="ds-i18n">Please move both sticks to the <b>top-left corner</b> and release them.</p>
+                <p class="ds-i18n">When the sticks are back in the center, press <b>Continue</b>.</p>
+            </div>
+            <div class="container" style="display: none;" id="list-3">
+                <h4 class="ds-i18n">Step 2 of 4</h4>
+                <p class="ds-i18n">Please move both sticks to the <b>top-right corner</b> and release them.</p>
+                <p class="ds-i18n">When the sticks are back in the center, press <b>Continue</b>.</p>
+            </div>
+            <div class="container" style="display: none;" id="list-4">
+                <h4 class="ds-i18n">Step 3 of 4</h4>
+                <p class="ds-i18n">Please move both sticks to the <b>bottom-left corner</b> and release them.</p>
+                <p class="ds-i18n">When the sticks are back in the center, press <b>Continue</b>.</p>
+            </div>
+            <div class="container" style="display: none;" id="list-5">
+                <h4 class="ds-i18n">Step 4 of 4</h4>
+                <p class="ds-i18n">Please move both sticks to the <b>bottom-right corner</b> and release them.</p>
+                <p class="ds-i18n">When the sticks are back in the center, press <b>Continue</b>.</p>
+            </div>
+            <div class="container" style="display: none;" id="list-6">
+                <h4 class="ds-i18n">Calibration completed successfully!</h4>
+                <p class="ds-i18n">You can now close this window.</p>
+            </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" id="quickCalibBtn" onclick="quick_calibrate_instead()">
+          <i class="fas fa-bolt"></i>&nbsp;<span class="ds-i18n">Quick calibrate</span>
+        </button>
+        <button type="button" class="btn btn-primary" id="calibNext" onclick="calib_next()">
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="btnSpinner" style="display: none;"></span>
+          <span id="calibNextText" class="ds-i18n">Next</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

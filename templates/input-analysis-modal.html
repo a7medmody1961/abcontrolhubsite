@@ -1,0 +1,66 @@
+<div class="modal fade" id="inputAnalysisModal" tabindex="-1" aria-labelledby="inputAnalysisModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title ds-i18n" id="inputAnalysisModalLabel">Advanced Input Analysis</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="stop_input_analysis()"></button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="d-flex justify-content-center mb-4">
+            <button type="button" id="btn-start-analysis" class="btn-glow-primary ds-btn" style="width: 200px; font-size: 1.2rem;" onclick="toggle_input_analysis()">
+                <i class="fas fa-play me-2"></i> <span class="ds-i18n" id="btn-analysis-text">Start Test</span>
+            </button>
+        </div>
+
+        <div class="row text-center mb-4 g-3">
+            <div class="col-md-4">
+                <div class="p-3 border rounded analysis-stat-card stat-polling">
+                    <h6 class="text-muted mb-2 ds-i18n">Polling Rate</h6>
+                    <h2 class="mb-0" id="stat-polling-rate" style="font-family: var(--font-hud);">0 Hz</h2>
+                    <small class="text-muted"><span class="ds-i18n">Max</span>: <span id="stat-max-rate">0</span> Hz</small>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-3 border rounded analysis-stat-card stat-latency">
+                    <h6 class="text-muted mb-2 ds-i18n">Interval / Latency</h6>
+                    <h2 class="mb-0" id="stat-latency" style="font-family: var(--font-hud);">0.00 ms</h2>
+                    <small class="text-muted"><span class="ds-i18n">Avg Interval</span></small>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="p-3 border rounded analysis-stat-card stat-jitter">
+                    <h6 class="text-muted mb-2 ds-i18n">Jitter (Stability)</h6>
+                    <h2 class="mb-0" id="stat-jitter" style="font-family: var(--font-hud);">0.00 ms</h2>
+                    <small class="text-muted"><span class="ds-i18n">Variance</span></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card analysis-graph-container">
+            <!-- FIX: Separated icon and text to fix translation key issue -->
+            <div class="card-header small analysis-graph-header">
+                <i class="fas fa-wave-square me-2"></i>
+                <span class="ds-i18n">Interval Distribution (Live Graph)</span>
+            </div>
+            <div class="card-body p-0 position-relative" style="height: 200px;">
+                <canvas id="analysisCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
+                <div id="analysis-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                    <p class="text-muted ds-i18n">Press Start to begin analysis</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-3 text-center">
+            <small class="text-muted"><i class="fas fa-info-circle"></i> <span class="ds-i18n">Move the sticks continuously in circles for accurate polling rate measurement.</span></small>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary ds-i18n" data-bs-dismiss="modal" onclick="stop_input_analysis()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

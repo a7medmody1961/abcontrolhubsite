@@ -1,0 +1,29 @@
+<div class="modal fade" id="rangeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 ds-i18n" id="staticBackdropLabel">Range calibration</h1>
+      </div>
+      <div class="modal-body text-center">
+        
+        <h4 class="ds-i18n" style="color: var(--glow-cyan);"><b>The controller is now sampling data!</b></h4>
+        <p class="ds-i18n">Rotate the sticks slowly at least 2 times in one direction and 2 times in the other direction to cover the whole range.</p>
+        
+        <div class="range-animation">
+          <div class="range-stick"></div>
+        </div>
+        
+        <div class="progress mt-3" role="progressbar" aria-label="Range calibration progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="height: 5px;">
+          <div id="range-progress-bar" class="progress-bar" style="width:0%; background-color: var(--glow-cyan); box-shadow: 0 0 10px var(--glow-cyan);"></div>
+        </div>
+        
+        <div class="alert alert-dark mt-3" id="range-calibration-alert" role="alert" style="background-color: rgba(0,0,0,0.3); border: 0;">
+          <small class="ds-i18n">The <b>Done</b> button will unlock after at most 15 seconds. If you press <b>Done</b> without rotating the sticks, the calibration will be incomplete and you will need to repeat it.</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="range-done-btn" class="btn btn-outline-primary ds-i18n" onclick="calibrate_range_on_close()">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
