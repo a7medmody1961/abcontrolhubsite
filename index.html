@@ -132,12 +132,10 @@
       </div>
     </div>
 
-    <div id="offlinebar" class="offline-container" style="display: none;">
-      <h2 class="mb-3 ds-i18n h4">Please connect a DualShock 4, a DualSense or DualSense Edge controller to your computer and press Connect.</h2>
-      <button id="btnconnect" type="button" class="btn-glow-connect" onclick="connect()">
-        <span class="spinner-border spinner-border-sm" style="display: none;" id="connectspinner" aria-hidden="true"></span>
-        <i class="fas fa-power-off me-2"></i> <span class="ds-i18n">Connect</span>
-      </button>
+    <!-- تم تعديل هذه الكتلة: إزالة زر الاتصال تماماً والاعتماد على رسالة الانتظار فقط -->
+    <div id="offlinebar" class="offline-container" style="display: block;">
+      <h2 class="mb-3 ds-i18n h4" id="connect-message">Waiting for Connect...</h2>
+      <!-- تم حذف زر الاتصال: <button id="btnconnect" type="button" ... > -->
     </div>
 
     <div id="onlinebar" style="display: none;">
