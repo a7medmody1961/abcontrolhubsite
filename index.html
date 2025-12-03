@@ -132,10 +132,22 @@
       </div>
     </div>
 
-    <!-- تم تعديل هذه الكتلة: إزالة زر الاتصال تماماً والاعتماد على رسالة الانتظار فقط -->
+    <!-- تم تعديل هذه الكتلة لدمج الرسالة في تصميم يشبه الزر الملفت للنظر. -->
     <div id="offlinebar" class="offline-container" style="display: block;">
-      <h2 class="mb-3 ds-i18n h4" id="connect-message">Waiting for Connect...</h2>
-      <!-- تم حذف زر الاتصال: <button id="btnconnect" type="button" ... > -->
+      
+      <!-- رسالة الانتظار/التوجيه -->
+      <div id="connect-message-container" class="btn-glow-connect" style="width: auto; padding: 15px 30px;">
+        <h2 class="mb-0 ds-i18n h4" id="connect-message" style="font-size: 1.5rem; color: inherit;">Waiting for Connect...</h2>
+      </div>
+
+      <!-- زر الاتصال المخفي/المعاد (سيظهر عند الفشل التلقائي ليفتح نافذة اختيار الجهاز يدوياً) -->
+      <button id="btnconnect" type="button" class="btn-glow-connect mt-4" onclick="connect()" style="display: none; width: 100%; max-width: 300px;">
+        <span class="spinner-border spinner-border-sm" style="display: none;" id="connectspinner" aria-hidden="true"></span>
+        <i class="fas fa-power-off me-2"></i> <span class="ds-i18n">Connect</span>
+      </button>
+
+      <!-- رسالة مساعدة إضافية في حالة عدم الاتصال -->
+      <p id="connect-help-message" class="text-muted mt-3 ds-i18n" style="display: block;">Please connect a DualShock 4, a DualSense or DualSense Edge controller to your computer.</p>
     </div>
 
     <div id="onlinebar" style="display: none;">

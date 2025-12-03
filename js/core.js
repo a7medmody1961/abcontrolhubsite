@@ -48,7 +48,11 @@ const domCache = {
   stickCanvas: null,
   l2_progress: null,
   r2_progress: null,
-  connect_message: null, // تم إضافة عنصر رسالة الاتصال هنا
+  connect_message: null, 
+  connect_message_container: null, // تم إضافة عنصر حاوية الرسالة
+  btn_connect: null, // تم إضافة زر الاتصال
+  connect_spinner: null, // تم إضافة سبينر الاتصال
+  connect_help_message: null, // تم إضافة رسالة المساعدة
 };
 
 function gboot() {
@@ -69,7 +73,11 @@ function gboot() {
     domCache.stickCanvas = document.getElementById("stickCanvas");
     domCache.l2_progress = document.getElementById("l2-progress");
     domCache.r2_progress = document.getElementById("r2-progress");
-    domCache.connect_message = document.getElementById("connect-message"); // جلب عنصر رسالة الاتصال
+    domCache.connect_message = document.getElementById("connect-message");
+    domCache.connect_message_container = document.getElementById("connect-message-container"); // جلب حاوية الرسالة
+    domCache.btn_connect = document.getElementById("btnconnect"); // جلب زر الاتصال
+    domCache.connect_spinner = document.getElementById("connectspinner"); // جلب سبينر الاتصال
+    domCache.connect_help_message = document.getElementById("connect-help-message"); // جلب رسالة المساعدة
 
     window.addEventListener("error", (event) => {
       console.error(event.error?.stack || event.message);
@@ -146,11 +154,6 @@ function gboot() {
       return;
     }
     
-    // إظهار رسالة 'بانتظار الاتصال' وتحريك مؤشر التحميل
-    if (domCache.connect_message) {
-      domCache.connect_message.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> ${l("Waiting for Connect...")}`;
-    }
-
     // بدء محاولة الاتصال التلقائي
     connect_auto();
 
@@ -184,42 +187,52 @@ function toggleElement(id, show) {
 function updateConnectUI(state, message = "") {
     if (!domCache.connect_message) return;
 
-    const btnConnect = document.getElementById("btnconnect");
-
+    // إخفاء زر الاتصال و رسالة المساعدة افتراضيا
+    if (domCache.btn_connect) domCache.btn_connect.style.display = 'none';
+    if (domCache.connect_spinner) domCache.connect_spinner.style.display = 'none';
+    if (domCache.connect_help_message) domCache.connect_help_message.style.display = 'none';
+    if (domCache.connect_message_container) domCache.connect_message_container.classList.remove('btn-glow-danger');
+    
+    // تحديث الرسالة الرئيسية
     switch (state) {
         case 'waiting':
-            domCache.connect_message.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> ${l("Waiting for Connect...")}`;
+            // رسالة الانتظار التلقائي
+            domCache.connect_message.innerHTML = `<i class="fas fa-search me-2"></i> ${l("Waiting for Connect...")}`;
+            if (domCache.connect_message_container) domCache.connect_message_container.style.cursor = 'default';
             break;
         case 'connecting':
+            // رسالة الاتصال جاري (تظهر السبينر)
             domCache.connect_message.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> ${l("Connecting...")}`;
+            if (domCache.connect_message_container) domCache.connect_message_container.style.cursor = 'wait';
             break;
         case 'prompt':
-            // في حالة الـ Prompt، نحتاج رسالة توجيه للاتصال
-            const defaultMsg = l("Please connect a DualShock 4, a DualSense or DualSense Edge controller to your computer and press Connect.");
-            domCache.connect_message.innerHTML = message || defaultMsg;
-
+            // في حالة الـ Prompt، نحتاج رسالة توجيه للاتصال اليدوي
+            domCache.connect_message.innerHTML = `<i class="fas fa-usb me-2"></i> ${l("Connect Now!")}`;
+            if (domCache.connect_message_container) domCache.connect_message_container.style.cursor = 'pointer';
+            
             // إظهار زر Connect للمستخدم ليختار الجهاز يدوياً
-            if (btnConnect) {
-                btnConnect.style.display = 'inline-block';
-                btnConnect.disabled = false;
+            if (domCache.btn_connect) {
+                domCache.btn_connect.style.display = 'block';
+                domCache.btn_connect.disabled = false;
+            }
+            if (domCache.connect_help_message) {
+                domCache.connect_help_message.style.display = 'block';
+                domCache.connect_help_message.textContent = l("Click 'Connect Now' to open the device selection window.");
             }
             break;
         case 'error':
-            domCache.connect_message.innerHTML = message || `${l("Connection failed. Waiting for Connect...")}`;
+            // رسالة خطأ مع مؤشر انتظار خفيف
+            domCache.connect_message.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i> ${message || l("Connection failed. Please reconnect.")}`;
+            if (domCache.connect_message_container) {
+                domCache.connect_message_container.classList.add('btn-glow-danger');
+                domCache.connect_message_container.style.cursor = 'default';
+            }
             break;
     }
 }
 
-// Helper to reset connect button UI state (للحالة التي بها زر Connect)
+// Helper to reset connect button UI state
 function resetConnectUI() {
-    const btnConnect = document.getElementById("btnconnect");
-    const connectSpinner = document.getElementById("connectspinner");
-    if (btnConnect) {
-      btnConnect.disabled = false;
-      btnConnect.style.display = 'none'; // نخفيه الآن، وسيظهر فقط في حالة الـ 'prompt'
-    }
-    if (connectSpinner) connectSpinner.style.display = 'none';
-    
     // نعود إلى حالة الانتظار
     updateConnectUI('waiting');
 }
@@ -230,55 +243,32 @@ async function connect_auto() {
     updateConnectUI('waiting');
     
     if (app.isAndroid) {
-        // في أندرويد، نطلب السماح مباشرة
         window.AndroidBridge.requestUsbPermission();
         return;
     }
     
     try {
         const supportedModels = ControllerFactory.getSupportedModels();
-        const requestParams = { filters: supportedModels };
         
         // 1. محاولة الحصول على الأجهزة الممنوح لها الإذن سابقاً
         let devices = await navigator.hid.getDevices();
 
         if (devices.length > 0) {
             updateConnectUI('connecting');
-            
-            // اختيار أول جهاز والاتصال به مباشرة
             const [device] = devices;
             await attemptConnect(device);
             return;
         }
 
-        // 2. إذا لم يتم العثور على أجهزة محفوظة، نطلب من المستخدم اختيار جهاز (Prompt)
-        updateConnectUI('prompt', l("Please connect a DualShock 4, a DualSense or DualSense Edge controller to your computer and press Connect."));
+        // 2. إذا لم يتم العثور على أجهزة محفوظة، ننتقل إلى وضع التوجيه (Prompt)
+        updateConnectUI('prompt');
         
-        // ** ملاحظة: عند الـ prompt، المستخدم يجب أن يضغط على زر Connect (الذي لا يجب أن يكون موجوداً). **
-        // بما أن الزر غير موجود، نحتاج لدالة Connect اليدوية التي يطلقها المستخدم.
-        // ولأننا ألغينا الزر، فالخيار الأفضل هو إضافة رسالة توجيه واضحة للمستخدم.
-        
-        // الطريقة البديلة: طلب جهاز جديد مباشرة دون انتظار الضغط على زر Connect
-        // هذه الخطوة تفتح نافذة اختيار الجهاز بشكل آلي بعد فترة قصيرة
-        await sleep(2000); // إعطاء المستخدم فرصة لرؤية رسالة "بانتظار"
-        
-        // هنا، يجب على المستخدم أن يضغط زر Connect (الذي ألغيناه)
-        // الحل: نستخدم `requestDevice` هنا، وسيعتبر هذا بمثابة طلب الاتصال الأول
-        // إذا قام المستخدم بتوصيل الجهاز بعد فتح الصفحة، سيتم معالجته بواسطة `handleConnectedDevice`
-        devices = await navigator.hid.requestDevice(requestParams);
-
-        if (devices.length > 0) {
-            updateConnectUI('connecting');
-            const [device] = devices;
-            await attemptConnect(device);
-        } else {
-            // المستخدم رفض الاتصال أو أغلق النافذة
-            updateConnectUI('error', l("Connection failed. Waiting for Connect..."));
-        }
-
     } catch(error) {
         console.error("Auto connection failed:", error);
-        updateConnectUI('error', l("Connection failed. Waiting for Connect..."));
+        // في حالة فشل الاتصال التلقائي (مثل خطأ غير متوقع)، نعرض رسالة خطأ ثم ننتقل لوضع الـ prompt
+        updateConnectUI('error', l("Auto-connection failed. Click 'Connect Now' to select device."));
+        // إعادة زر Connect لتمكين الاتصال اليدوي
+        updateConnectUI('prompt');
     }
 }
 
@@ -296,6 +286,7 @@ async function connect() {
   await sleep(200);
 
   updateConnectUI('connecting');
+  if (domCache.connect_spinner) domCache.connect_spinner.style.display = 'inline-block';
 
   try {
     if (app.isAndroid) {
@@ -306,6 +297,8 @@ async function connect() {
     // طلب جهاز جديد يدوياً (هذه الخطوة كانت تُطلق بضغطة الزر سابقاً)
     const supportedModels = ControllerFactory.getSupportedModels();
     const requestParams = { filters: supportedModels };
+    
+    // هذا الاستدعاء يفتح نافذة المتصفح لاختيار الجهاز (يتطلب نقرة المستخدم)
     const devices = await navigator.hid.requestDevice(requestParams);
     
     if (devices.length === 0) {
@@ -330,13 +323,18 @@ async function connect() {
         errorAlert(error.message);
     }
     
-    updateConnectUI('error', errorMsg);
-    await disconnect();
+    // نعود لوضع التوجيه بعد الفشل
+    updateConnectUI('prompt');
   }
 }
 
 // دالة لمعالجة محاولة الاتصال الفعلية بالجهاز
 async function attemptConnect(device) {
+    if (!controller) {
+        controller = initControllerManager({ handleNvStatusUpdate });
+        controller.setInputHandler(handleControllerInput);
+    }
+    
     if(device.opened) {
       console.log("Device already opened, closing it before re-opening.");
       await device.close();
@@ -433,7 +431,8 @@ async function handleConnectedDevice(event) {
         await attemptConnect(event.device);
     } catch (error) {
         console.error("Connect event failure:", error);
-        updateConnectUI('error', l("Connection failed after plugging device. Waiting for Connect..."));
+        updateConnectUI('error', l("Connection failed after plugging device. Click 'Connect Now' to select device."));
+        updateConnectUI('prompt'); // الرجوع لوضع التوجيه بعد الفشل
     }
 }
 
@@ -485,7 +484,7 @@ async function setupDeviceUI(device) {
     const deviceName = ControllerFactory.getDeviceName(device.productId);
     document.getElementById("devname").textContent = deviceName + " (" + dec2hex(device.vendorId) + ":" + dec2hex(device.productId) + ")";
 
-    // إخفاء رسالة 'بانتظار الاتصال'
+    // إخفاء رسالة 'بانتظار الاتصال' وعرض لوحة التحكم
     setDisplay("offlinebar", false); 
     
     setDisplay("onlinebar", true);
@@ -529,10 +528,7 @@ async function setupDeviceUI(device) {
     }
     
     // Successful connection -> تحديث الواجهة لحالة الاتصال
-    updateConnectUI('connecting');
-    // إخفاء الـ spinner (كان موجود في resetConnectUI)
-    const connectSpinner = document.getElementById("connectspinner");
-    if (connectSpinner) connectSpinner.style.display = 'none';
+    // updateConnectUI('connecting'); // لم تعد ضرورية بعد إخفاء offlinebar
 }
 
 async function continue_connection(event) {
@@ -558,7 +554,7 @@ async function disconnect() {
   setDisplay("onlinebar", false);
   setDisplay("mainmenu", false);
   
-  // إعادة حالة الواجهة لـ 'بانتظار الاتصال' ومحاولة الاتصال التلقائي
+  // العودة إلى وضع الانتظار/التوجيه
   updateConnectUI('waiting');
 }
 
